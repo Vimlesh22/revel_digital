@@ -17,6 +17,7 @@ const os = require('os');
      process.env.NODE_ENV = envArg[0].split('=')[1];
  }
  if (typeof process.env.NODE_ENV == 'undefined') {
+   console.log(os.hostname())
      if (environment.development.indexOf(os.hostname()) > -1) {
          process.env.NODE_ENV = "development";
      } else if (environment.uat.indexOf(os.hostname()) > -1) {
@@ -37,11 +38,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 let indexRouter = require(appRoot + '/modules/routes.js');
-let validator = require(appRoot + '/helper/client_api_validator.js');
-app.use(function(req, res, next) {
-  validator.check_api_validation(req, res, next)
-});
-app.use('/rest', indexRouter);
+// let validator = require(appRoot + '/helper/client_api_validator.js');
+// app.use(function(req, res, next) {
+//   validator.check_api_validation(req, res, next)
+// });
+app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

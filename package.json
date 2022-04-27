@@ -2,25 +2,27 @@
   "name": "school-management",
   "version": "0.0.0",
   "private": true,
-  "author": "Siddheshwar Kadam",
+  "author": "Vimlesh kumar",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "fs": "^0.0.1-security",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.27.0",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.15",
     "os": "^0.1.1",
     "path": "^0.12.7",
     "sha1": "^1.1.1",
     "translate": "^1.1.2",
-    "validatorjs": "^3.19.2"
+    "validatorjs": "^3.19.2",
+    "xml2js": "^0.4.23"
   }
 }

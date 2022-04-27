@@ -1,9 +1,9 @@
 module.exports = {
 	development: [
-		"siddheshwar-Aspire-E5-575",
+		"Vimleshs-MacBook-Pro.local",
 	],
 	sit: [
-		// "siddheshwar-Aspire-E5-575"
+		// ""
 	],
 	uat: [
 	],
