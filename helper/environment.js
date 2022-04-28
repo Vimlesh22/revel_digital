@@ -1,6 +1,6 @@
 module.exports = {
 	development: [
-		"Vimleshs-MacBook-Pro.local",
+		"DESKTOP-L8F19PN",
 	],
 	sit: [
 		// ""

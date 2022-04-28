@@ -43,18 +43,6 @@ exports.executevaluesquery = function(query, values) {
     });
 }
 
-exports.giftcardupload = function(query, values) {
-    return new Promise((result, reject) => {
-        pool.query(query, [values], function(err, rows, fields) {
-            if (err) {
-                // console.log("error in iff-----------> ", err);
-                reject(err);
-            };
-            result(rows);
-        });
-    });
-}
-
 exports.destroy = function(err, values) {
     return pool.rollback(function() {
         throw err;

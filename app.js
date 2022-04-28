@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 global.appRoot = path.resolve(__dirname + "/");
 var app = express();
-var debug = require('debug')('school-management:server');
 var http = require('http');
 var path = require('path');
 let environment = require(appRoot+"/helper/environment.js");
@@ -138,7 +137,6 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
 }
 
 module.exports = app;

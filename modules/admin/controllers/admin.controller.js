@@ -18,9 +18,9 @@ module.exports = class AdminController {
         let returnResponse = {}
         // Format request data
         let path = adminFormatter.getPath(req);
-        // Getting voucher Validator
+        // Getting Validator
         let rules = adminValidator.readXML();
-        // Check and store validation data
+        // Check validation data
         let validation = new Validator(path, rules);
         // Check validation is passed or failed
         if (validation.passes() && !validation.fails()) {
@@ -29,12 +29,17 @@ module.exports = class AdminController {
              */
             returnResponse = await adminService.readAndSaveXML(path);
         } else {
-            // store return code and message in returnResponse variable
+            //  returns code and message in returnResponse variable
             returnResponse = responseMessages.validation_error;
             // Getting errors of validation and store in returnResponse variable
             returnResponse.errors = validation.errors.errors;
         }
         // return response to client request
+        return res.json(returnResponse);
+    }
+
+    async getAllRevenueCenterController(req, res) {
+        const returnResponse = await adminService.getAllRevenueCenterService();
         return res.json(returnResponse);
     }
 
