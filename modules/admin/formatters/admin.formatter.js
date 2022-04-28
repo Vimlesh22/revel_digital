@@ -1,10 +1,10 @@
 "use strict";
 module.exports = class offerFormatter {
     getPath(req) {
-        const path = {
+        const params = {
             path : req.body.path
         }
-        return path;
+        return params;
     }
 
 }

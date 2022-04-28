@@ -8,12 +8,13 @@ const parser = new xml2js.Parser({
 
 module.exports = class adminService {
     
-    async readAndSaveXML(filePath) {
-        const { path } = filePath;
-        return await fileHelper.readFile(path).then(async (data) => {
-        const added = await adminModel.addSaleItem(data);
-        if(added){
-            return responseMessages.success("Revenue Centere Data Saved Successfully");
+    async readAndGetRevenueCenter(path ,filter) {
+        return await fileHelper.readFile(path,filter).then(async (data) => {
+        if(data){
+            return {
+                status: true,
+                saleItems: data.saleItems
+            }
         }
         return responseMessages.failed("something_went_wrong", "", {});
         })

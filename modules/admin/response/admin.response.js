@@ -3,10 +3,6 @@ let response = {
         status: false,
         status_code: 'CC422',
         message: "Incorrect data"
-    },
-    form_field_required: {
-        message: "Form fields required",
-        status_code: "CC400",
     }
 }
 module.exports = response;

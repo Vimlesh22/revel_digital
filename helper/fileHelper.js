@@ -9,9 +9,11 @@ const readFile = (path) => {
     const data = fs.readFileSync(path);
     return new Promise((resolve, reject) => {
         parser.parseStringPromise(data).then((result, err) => {
+            const saleItemsArray = result['ConfigExport']['SaleItems'];
+            const saleItems = {};
             if (result) {
-                const salesItemData = formatSalesItem(result['ConfigExport']['SaleItems'][0]['SaleItem']);
-                resolve(salesItemData);
+                saleItems.saleItems = formatSalesItem(saleItemsArray[0]['SaleItem']);
+                resolve(saleItems);
             } else {
                 reject(err);
             }
@@ -20,43 +22,54 @@ const readFile = (path) => {
     })
 }
 
-const formatSalesItem = (salesItem) => {
-    const salesItemArray = [];
-    const result = {};
-    for (let index = 0; index < salesItem.length; index++) {
-        const item = salesItem[index];
-        result.saleItemId = item['SaleItemId'][0];
-        result.description = item['Description'][0];
-        result.available = item['Available'][0];
-        item['RevenueCenter'].forEach(revenueCenter => {
-            result.revenue_center_id = revenueCenter.attr['Id'];
-            result.revenue_center_name = revenueCenter.attr['Name'];
-            const itemAvaialabilityByMode = revenueCenter['ItemAvailabilityByMode'][0]['Mode'];
-            const priceList = revenueCenter['PriceList'][0]['Price'];
-            revenueCenter = getRevenueCenterDetails(itemAvaialabilityByMode, priceList, result);
-            salesItemArray.push(revenueCenter);
-        });
+const formatSalesItem = (saleItems) => {
+    const saleItemsResult = [];
+    for (let index = 0; index < saleItems.length; index++){
+        const item = saleItems[index];
+        let saleItemObj = {};
+        if(item['Available'][0] === '1'){
+            saleItemObj = {
+                available: item['Available'][0],
+                description: item['Description'][0],
+                division: item['Division'][0],
+                saleItemId: item['SaleItemId'][0],
+            };
+            saleItemObj.revenueCenters =  formatRevenueCenterDetails(item['RevenueCenter']);
+        }
+        saleItemsResult.push(saleItemObj);
     }
-    return salesItemArray;
+    return saleItemsResult;
 }
 
-const getRevenueCenterDetails = (configurationByMode, priceList, result) => {
-    const actualResult = []
-    configurationByMode.filter(function (mode) {
-        return priceList.some(function (o2) {
-            if (mode['Available'][0] === '1' && mode.attr.Id === o2.attr.Mode) {
-                const modeResult = {
-                    ...result,
+
+const formatRevenueCenterDetails = (revenueCenter) => {
+    const revenueCenterDetails  = [];
+    for (let index = 0; index < revenueCenter.length; index++){
+        const item = revenueCenter[index];
+        const revenueObj = {
+            id: item.attr.Id,
+            name: item.attr.Name
+        }
+        revenueObj.priceList = getPriceList(item['ItemAvailabilityByMode'][0]['Mode'],item['PriceList'][0]['Price']);
+        revenueCenterDetails.push(revenueObj);
+    }
+    return revenueCenterDetails;
+}
+
+const getPriceList =  (itemAvaialabilityByMode, priceList) => {
+    let priceListResult = [];
+    itemAvaialabilityByMode.filter(function (mode) {
+        return priceList.some(function (pList) {
+            if (mode['Available'][0] === '1' && mode.attr.Id === pList.attr.Mode) {
+                priceListResult.push({
                     mode_id: mode.attr.Id,
                     mode_name: mode.attr.Name,
-                    price: o2._,
-                    available: mode['Available'][0]
-                }
-                actualResult.push(modeResult)
+                    price: pList._
+                })
             }
         });
     });
-    return actualResult;
+    return priceListResult;
 }
 
 module.exports = {
