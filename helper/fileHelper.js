@@ -62,8 +62,8 @@ const getPriceList =  (itemAvaialabilityByMode, priceList) => {
         return priceList.some(function (pList) {
             if (mode['Available'][0] === '1' && mode.attr.Id === pList.attr.Mode) {
                 priceListResult.push({
-                    mode_id: mode.attr.Id,
-                    mode_name: mode.attr.Name,
+                    modeId: mode.attr.Id,
+                    modeName: mode.attr.Name,
                     price: pList._
                 })
             }
