@@ -15,11 +15,12 @@ module.exports = class AdminController {
         // returnResponse variable use for returning data to client request
         let returnResponse = {}
         // Format request data
-        let { path } = adminFormatter.getPath(req);
-        if (path) {
-            returnResponse = await adminService.readAndGetRevenueCenter(path);
+        let { configExportPath, revenueCenterExportPath, divisonExportPath } = adminFormatter.getPath(req);
+        if (configExportPath && revenueCenterExportPath && divisonExportPath) {
+            const filter = req.body.filter ? req.body.filter : null;
+            returnResponse = await adminService.readAndGetRevenueCenter(configExportPath, revenueCenterExportPath, divisonExportPath , filter);
         } else {
-             //returns code and message in returnResponse variable
+            //returns code and message in returnResponse variable
             returnResponse = responseMessages.validation_error;
             //Getting errors of validation and store in returnResponse variable
             returnResponse.errors = validation.errors.errors;
@@ -27,11 +28,5 @@ module.exports = class AdminController {
         // return response to client request
         return res.json(returnResponse);
     }
-
-    async getAllRevenueCenterController(req, res) {
-        const returnResponse = await adminService.getAllRevenueCenterService();
-        return res.json(returnResponse);
-    }
-
 
 }

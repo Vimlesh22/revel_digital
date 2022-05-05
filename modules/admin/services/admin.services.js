@@ -8,30 +8,21 @@ const parser = new xml2js.Parser({
 
 module.exports = class adminService {
     
-    async readAndGetRevenueCenter(path ,filter) {
-        return await fileHelper.readFile(path,filter).then(async (data) => {
+    async readAndGetRevenueCenter(configExportPath, revenueCenterExportPath, divisonExportPath , filter) {
+        const configExportData = await fileHelper.readFile(configExportPath);
+        const revenueCenterExportData = await fileHelper.readFile(revenueCenterExportPath);
+        const divisionData =  await fileHelper.readFile(divisonExportPath);
+        const saleItems = configExportData['ConfigExport']['SaleItems'];
+        const revenueCenters = revenueCenterExportData['ConfigExport']['RevenueCenters'];
+        const divisions = divisionData['ConfigExport']['Divisions'];
+        const data = fileHelper.getRevenueDetails(saleItems, revenueCenters, divisions , filter);
         if(data){
             return {
                 status: true,
-                saleItems: data.saleItems
+                saleItems: data
             }
+        }else {
+            return responseMessages.failed("something_went_wrong", "", {}); 
         }
-        return responseMessages.failed("something_went_wrong", "", {});
-        })
-        .catch((err) => {
-            let error = (typeof err.errors != 'undefined') ? err.errors : err.message;
-            return responseMessages.failed("something_went_wrong", "", {});
-        })
-    }
-
-    async getAllRevenueCenterService(){
-        return adminModel.getAllRevenueCenterModel()
-        .then(async (revenuecenter)=>{
-            return responseMessages.success( revenuecenter);
-        })
-        .catch((err) => {
-            let error = (typeof err.errors != 'undefined') ? err.errors : err.message;
-            return responseMessages.failed("something_went_wrong", "", form_data.lang_code);
-        })
     }
 }
