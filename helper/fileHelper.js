@@ -163,6 +163,30 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
         })
         finalResult = result;
     }
+    //Filter by Mode
+    if(filter.modeIds && filter.modeIds.length > 0){
+        let results = [];
+        finalResult.forEach(item => {
+            let revenueCenters = [];
+            item.revenueCenters.forEach(revenue => {
+                let newPriceList = [];
+                revenue.priceList.forEach(mode => {
+                    if (filter.modeIds.includes(mode.modeId)) {
+                        newPriceList.push(mode);
+                    }
+                })
+                if(newPriceList.length > 0){
+                    revenue.priceList = newPriceList;
+                    revenueCenters.push(revenue);
+                }  
+            })
+            if (revenueCenters.length > 0) {
+                item.revenueCenters = revenueCenters;
+                results.push(item);
+            }
+        })
+        return finalResult = results;
+    }
 
     return finalResult;
 
