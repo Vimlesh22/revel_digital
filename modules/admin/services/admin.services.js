@@ -15,7 +15,7 @@ module.exports = class adminService {
         const saleItems = configExportData['ConfigExport']['SaleItems'];
         const revenueCenters = revenueCenterExportData['ConfigExport']['RevenueCenters'];
         const divisions = divisionData['ConfigExport']['Divisions'];
-        const data = fileHelper.getRevenueDetails(saleItems, revenueCenters, divisions , filter);
+        const data = fileHelper.getBusinessDetails(saleItems, revenueCenters, divisions , filter);
         if(data){
             return {
                 status: true,

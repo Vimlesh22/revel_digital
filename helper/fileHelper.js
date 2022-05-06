@@ -9,23 +9,16 @@ const readFile = (path) => {
     const data = fs.readFileSync(path);
     return new Promise((resolve, reject) => {
         parser.parseStringPromise(data).then((result, err) => {
-            if (result) {
-                resolve(result);
-            } else {
-                reject(err);
-            }
-
+            return result ? resolve(result): reject(err);
         })
     })
 }
 
-const getRevenueDetails = (saleItems, revenueCenters, divisons, filter) => {
+const getBusinessDetails = (saleItems, revenueCenters, divisons, filter) => {
     const saleItemDetails = formatSaleItem(saleItems[0]['SaleItem']);
     const revenueCenterDetails = formatRevenueCenter(revenueCenters[0]['RevenueCenter']);
     const divisonsDetails = formatDivisions(divisons[0]['Division']);
-    const result = getFinalRevenueDetails(saleItemDetails, revenueCenterDetails, divisonsDetails, filter);
-    return result;
-
+    return getFinalRevenueDetails(saleItemDetails, revenueCenterDetails, divisonsDetails, filter);
 }
 
 const formatSaleItem = (saleItems) => {
@@ -71,6 +64,7 @@ const formatDivisions = (divisions) => {
 
 const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsDetails, filter) => {
     let finalResult = [];
+
     for (let index = 0; index < saleItemDetails.length; index++) {
         const saleItem = saleItemDetails[index];
         if (divisonsDetails[saleItem.divisionId])
@@ -81,8 +75,11 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
         finalResult.push(saleItem);
     }
 
-    let filteredResult = [];
+    return filter !== null ? filterBasedOnInputs(filter, finalResult) : finalResult;
 
+}
+
+const filterBasedOnInputs = (filter, finalResult) => {
     //Filter by SaleItems, Division, RevenueCenter and Mode
     if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.divisionIds && filter.divisionIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0 && filter.modeIds && filter.modeIds.length > 0) {
         let results = [];
@@ -95,17 +92,17 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
                         newPriceList.push(mode);
                     }
                 })
-                if(newPriceList.length > 0){
+                if (newPriceList.length > 0) {
                     revenue.priceList = newPriceList;
                     revenueCenters.push(revenue);
-                }  
+                }
             })
             if (revenueCenters.length > 0) {
                 item.revenueCenters = revenueCenters;
                 results.push(item);
             }
         })
-        return finalResult = results;
+        return results;
     }
     //Filter by SaleItems, Division and RevenueCenter
     if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.divisionIds && filter.divisionIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
@@ -122,49 +119,49 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
                 results.push(item);
             }
         })
-        return finalResult = results;
+        return results;
     }
     //Filter by SaleItems and RevenueCenters
     if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
         let filteredSaleResult = finalResult.filter((item) => filter.saleItemIds.includes(item.saleItemId));
         let result = [];
         filteredSaleResult.forEach(item => {
-            item.revenueCenters = filterRevenueCenter(item.revenueCenters, filter.revenueCenterIds);
+            item.revenueCenters = filterRevenueCenterByIds(item.revenueCenters, filter.revenueCenterIds);
             result.push(item);
         })
-        return finalResult = result;
+        return result;
     }
     //Filter By SaleItems and Division
     if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.divisionIds && filter.divisionIds.length > 0) {
-        filteredResult = finalResult.filter(item => {
+        let filteredResult = finalResult.filter(item => {
             if (filter.saleItemIds.includes(item.saleItemId) && filter.divisionIds.includes(item.divisionId)) {
                 return true;
             }
             return false;
         })
-        return finalResult = filteredResult;
+        return filteredResult;
     }
     //Filter By Only SaleItems
     if (filter.saleItemIds && filter.saleItemIds.length > 0) {
-        filteredResult = finalResult.filter((item) => filter.saleItemIds.includes(item.saleItemId));
-        finalResult = filteredResult;
+        return finalResult.filter((item) => filter.saleItemIds.includes(item.saleItemId));
     }
     //Filter By Only Divisons
     if (filter.divisionIds && filter.divisionIds.length > 0) {
-        filteredResult = finalResult.filter((item) => filter.divisionIds.includes(item.divisionId));
-        finalResult = filteredResult;
+        return finalResult.filter((item) => filter.divisionIds.includes(item.divisionId));
     }
     //Filter By Only Revenue Centers
     if (filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
         let result = [];
         finalResult.forEach(item => {
-            item.revenueCenters = filterRevenueCenter(item.revenueCenters, filter.revenueCenterIds);
-            result.push(item);
+            item.revenueCenters = filterRevenueCenterByIds(item.revenueCenters, filter.revenueCenterIds);
+            if (item.revenueCenters.length > 0)
+                result.push(item)
+
         })
-        finalResult = result;
+        return result;
     }
     //Filter by Mode
-    if(filter.modeIds && filter.modeIds.length > 0){
+    if (filter.modeIds && filter.modeIds.length > 0) {
         let results = [];
         finalResult.forEach(item => {
             let revenueCenters = [];
@@ -175,27 +172,19 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
                         newPriceList.push(mode);
                     }
                 })
-                if(newPriceList.length > 0){
+                if (newPriceList.length > 0) {
                     revenue.priceList = newPriceList;
                     revenueCenters.push(revenue);
-                }  
+                }
             })
             if (revenueCenters.length > 0) {
                 item.revenueCenters = revenueCenters;
                 results.push(item);
             }
         })
-        return finalResult = results;
+        return results;
     }
-
-    return finalResult;
-
 }
-
-const filterBasedOnInputs = (filter, finalResult) => {
-
-}
-
 
 const formatRevenueCenterDetails = (revenueCenter) => {
     const revenueCenterDetails = [];
@@ -211,14 +200,12 @@ const formatRevenueCenterDetails = (revenueCenter) => {
     return revenueCenterDetails;
 }
 
-const filterRevenueCenter = (revenueCenters, revenueCenterIds) => {
+const filterRevenueCenterByIds = (revenueCenters, revenueCenterIds) => {
     let filteredCenter = [];
-    revenueCenters.filter(center => {
+    revenueCenters.forEach(center => {
         if (revenueCenterIds.includes(center.id)) {
             filteredCenter.push(center);
-            return true;
         }
-        return false;
     });
     return filteredCenter;
 }
@@ -241,6 +228,6 @@ const getPriceList = (itemAvaialabilityByMode, priceList) => {
 
 module.exports = {
     readFile: readFile,
-    getRevenueDetails: getRevenueDetails
+    getBusinessDetails: getBusinessDetails
 
 }
