@@ -82,26 +82,54 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
     }
 
     let filteredResult = [];
-    if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.divisionIds && filter.divisionIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
-        let filteredRevenueCenter = [];
-        filteredResult = finalResult.filter(item => {
-            item.revenueCenter.forEach(revenue => {
-                if (filter.saleItemIds.includes(item.saleItemId) && filter.divisionIds.includes(item.divisionId) && filter.revenueCenterIds.includes(revenue.id)) {
-                    filteredRevenueCenter.push(revenue);
-                }
-                return false;
-            });
 
+    //Filter by SaleItems, Division, RevenueCenter and Mode
+    if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.divisionIds && filter.divisionIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0 && filter.modeIds && filter.modeIds.length > 0) {
+        let results = [];
+        finalResult.forEach(item => {
+            let revenueCenters = [];
+            item.revenueCenters.forEach(revenue => {
+                let newPriceList = [];
+                revenue.priceList.forEach(mode => {
+                    if (filter.saleItemIds.includes(item.saleItemId) && filter.divisionIds.includes(item.divisionId) && filter.revenueCenterIds.includes(revenue.id) && filter.modeIds.includes(mode.modeId)) {
+                        newPriceList.push(mode);
+                    }
+                })
+                if(newPriceList.length > 0){
+                    revenue.priceList = newPriceList;
+                    revenueCenters.push(revenue);
+                }  
+            })
+            if (revenueCenters.length > 0) {
+                item.revenueCenters = revenueCenters;
+                results.push(item);
+            }
         })
-        return finalResult = filteredResult;
+        return finalResult = results;
     }
-
+    //Filter by SaleItems, Division and RevenueCenter
+    if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.divisionIds && filter.divisionIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
+        let results = [];
+        finalResult.forEach(item => {
+            let revenueCenters = [];
+            item.revenueCenters.forEach(revenue => {
+                if (filter.saleItemIds.includes(item.saleItemId) && filter.divisionIds.includes(item.divisionId) && filter.revenueCenterIds.includes(revenue.id)) {
+                    revenueCenters.push(revenue);
+                }
+            })
+            if (revenueCenters.length > 0) {
+                item.revenueCenters = revenueCenters;
+                results.push(item);
+            }
+        })
+        return finalResult = results;
+    }
     //Filter by SaleItems and RevenueCenters
-    if(filter.saleItemIds && filter.saleItemIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0){
+    if (filter.saleItemIds && filter.saleItemIds.length > 0 && filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
         let filteredSaleResult = finalResult.filter((item) => filter.saleItemIds.includes(item.saleItemId));
         let result = [];
         filteredSaleResult.forEach(item => {
-            item.revenueCenters = filterRevenueCenter(item.revenueCenters,filter.revenueCenterIds);
+            item.revenueCenters = filterRevenueCenter(item.revenueCenters, filter.revenueCenterIds);
             result.push(item);
         })
         return finalResult = result;
@@ -130,7 +158,7 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
     if (filter.revenueCenterIds && filter.revenueCenterIds.length > 0) {
         let result = [];
         finalResult.forEach(item => {
-            item.revenueCenters = filterRevenueCenter(item.revenueCenters,filter.revenueCenterIds);
+            item.revenueCenters = filterRevenueCenter(item.revenueCenters, filter.revenueCenterIds);
             result.push(item);
         })
         finalResult = result;
@@ -140,7 +168,7 @@ const getFinalRevenueDetails = (saleItemDetails, revenueCenterDetails, divisonsD
 
 }
 
-const filterBasedOnInputs = (filter,finalResult) => {
+const filterBasedOnInputs = (filter, finalResult) => {
 
 }
 
