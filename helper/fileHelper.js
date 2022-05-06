@@ -9,7 +9,7 @@ const readFile = (path) => {
     const data = fs.readFileSync(path);
     return new Promise((resolve, reject) => {
         parser.parseStringPromise(data).then((result, err) => {
-            return result ? resolve(result): reject(err);
+            return result ? resolve(result) : reject(err);
         })
     })
 }
@@ -28,7 +28,7 @@ const formatSaleItem = (saleItems) => {
         let saleItemObj = {};
         if (item['Available'][0] === '1') {
             saleItemObj = {
-                available: item['Available'][0],
+                available: item['Available'][0] === '1' ? true : false,
                 description: item['Description'][0],
                 divisionId: item['Division'][0],
                 saleItemId: item['SaleItemId'][0],
@@ -218,7 +218,7 @@ const getPriceList = (itemAvaialabilityByMode, priceList) => {
                 priceListResult.push({
                     modeId: mode.attr.Id,
                     modeName: mode.attr.Name,
-                    price: pList._
+                    price: parseFloat(pList._)
                 })
             }
         });

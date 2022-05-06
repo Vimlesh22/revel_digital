@@ -15,10 +15,10 @@ module.exports = class AdminController {
         // returnResponse variable use for returning data to client request
         let returnResponse = {}
         // Format request data
-        let { configExportPath, revenueCenterExportPath, divisonExportPath } = adminFormatter.getPath(req);
+        let { configExportPath, revenueCenterExportPath, divisonExportPath, filter } = adminFormatter.getReqParams(req);
         if (configExportPath && revenueCenterExportPath && divisonExportPath) {
-            const filter = req.body.filter ? req.body.filter : null;
-            returnResponse = await adminService.readAndGetRevenueCenter(configExportPath, revenueCenterExportPath, divisonExportPath , filter);
+            const filterCondition = filter && Object.keys(filter).length !== 0 ? req.body.filter : null;
+            returnResponse = await adminService.readAndGetRevenueCenter(configExportPath, revenueCenterExportPath, divisonExportPath, filterCondition);
         } else {
             //returns code and message in returnResponse variable
             returnResponse = responseMessages.validation_error;

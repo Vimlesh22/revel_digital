@@ -1,10 +1,11 @@
 "use strict";
 module.exports = class offerFormatter {
-    getPath(req) {
+    getReqParams(req) {
         const params = {
             configExportPath: req.body.configExportPath,
             revenueCenterExportPath: req.body.revenueCenterExportPath,
-            divisonExportPath: req.body.divisonExportPath
+            divisonExportPath: req.body.divisonExportPath,
+            filter: req.body.filter
 
         }
         return params;
