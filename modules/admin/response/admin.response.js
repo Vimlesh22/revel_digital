@@ -1,7 +1,6 @@
 let response = {
     validation_error: {
         status: false,
-        status_code: 'CC422',
         message: "Incorrect data"
     }
 }

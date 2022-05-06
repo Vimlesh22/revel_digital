@@ -22,8 +22,6 @@ module.exports = class AdminController {
         } else {
             //returns code and message in returnResponse variable
             returnResponse = responseMessages.validation_error;
-            //Getting errors of validation and store in returnResponse variable
-            returnResponse.errors = validation.errors.errors;
         }
         // return response to client request
         return res.json(returnResponse);
